@@ -1,4 +1,5 @@
-import { BrowserProvider, Contract, Signer } from 'ethers';
+import type { ChainConfig } from './chains/types';
+import type { WalletAdapter } from './adapters/types';
 
 export type TxStatus = 'idle' | 'pending' | 'success' | 'error';
 
@@ -9,12 +10,6 @@ export interface WalletState {
   chainId: string | null;
   /** Whether a wallet is connected */
   isConnected: boolean;
-  /** ethers BrowserProvider instance */
-  provider: BrowserProvider | null;
-  /** ethers Signer instance */
-  signer: Signer | null;
-  /** ethers Contract instance (if contractAddress & contractABI provided) */
-  contract: Contract | null;
   /** Current transaction status */
   txStatus: TxStatus;
   /** Human-readable transaction message */
@@ -22,7 +17,7 @@ export interface WalletState {
 }
 
 export interface WalletActions {
-  /** Request wallet connection via MetaMask */
+  /** Request wallet connection */
   connectWallet: () => Promise<void>;
   /** Send a named contract method as a transaction */
   sendTransaction: (method: string, args?: any[]) => Promise<void>;
@@ -31,8 +26,10 @@ export interface WalletActions {
 export type WalletContextValue = WalletState & WalletActions;
 
 export interface WalletProviderProps {
-  /** Target chain ID in hex. Default: '0xa869' (Avalanche Fuji Testnet) */
-  chainId?: string;
+  /** Chain configuration. Default: Avalanche Fuji Testnet */
+  chain?: ChainConfig;
+  /** Wallet adapter instance. Default: MetaMaskAdapter */
+  adapter?: WalletAdapter;
   /** Deployed contract address (typically from env var) */
   contractAddress?: string;
   /** Contract ABI as a JSON string (typically from env var) */

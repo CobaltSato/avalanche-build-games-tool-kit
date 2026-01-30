@@ -5,126 +5,54 @@ import {
   useState,
   useEffect,
   useCallback,
-  type ReactNode,
+  useRef,
 } from 'react';
-import { BrowserProvider, Contract, Signer } from 'ethers';
-import type { WalletContextValue, WalletProviderProps, TxStatus } from './types';
-
-const DEFAULT_CHAIN_ID = '0xa869'; // Avalanche Fuji Testnet
+import { WalletService } from './service/WalletService';
+import { MetaMaskAdapter } from './adapters/metamask';
+import { avalancheFuji } from './chains/avalanche-fuji';
+import type { WalletContextValue, WalletProviderProps } from './types';
 
 export const WalletContext = createContext<WalletContextValue | null>(null);
 
 export function WalletProvider({
-  chainId: targetChainId = DEFAULT_CHAIN_ID,
+  chain = avalancheFuji,
+  adapter,
   contractAddress,
   contractABI,
   children,
 }: WalletProviderProps) {
-  // --- state ---
-  const [provider, setProvider] = useState<BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<Signer | null>(null);
-  const [account, setAccount] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<string | null>(null);
-  const [contract, setContract] = useState<Contract | null>(null);
-  const [txStatus, setTxStatus] = useState<TxStatus>('idle');
-  const [txMessage, setTxMessage] = useState('');
+  const serviceRef = useRef<WalletService | null>(null);
 
-  // --- wallet connection ---
-  const connectWallet = useCallback(async () => {
-    if (!window.ethereum) {
-      alert('MetaMask is not installed. Please install it to use this dApp.');
-      return;
-    }
-    try {
-      const browserProvider = new BrowserProvider(window.ethereum);
-      await browserProvider.send('eth_requestAccounts', []);
-      const userSigner = await browserProvider.getSigner();
-      const userAccount = await userSigner.getAddress();
-      const network = await browserProvider.getNetwork();
+  if (!serviceRef.current) {
+    serviceRef.current = new WalletService(
+      adapter ?? new MetaMaskAdapter(),
+      chain,
+      contractAddress,
+      contractABI,
+    );
+  }
 
-      setProvider(browserProvider);
-      setSigner(userSigner);
-      setAccount(userAccount);
-      setChainId(`0x${network.chainId.toString(16)}`);
+  const service = serviceRef.current;
 
-      if (contractAddress && contractABI) {
-        const instance = new Contract(
-          contractAddress,
-          JSON.parse(contractABI),
-          userSigner,
-        );
-        setContract(instance);
-      }
-    } catch (error) {
-      console.error('Failed to connect wallet:', error);
-      alert('Failed to connect wallet. See console for details.');
-    }
-  }, [contractAddress, contractABI]);
+  const [state, setState] = useState(service.getState());
 
-  // --- MetaMask event listeners ---
   useEffect(() => {
-    const { ethereum } = window;
-    if (!ethereum?.on) return;
-
-    const handleAccountsChanged = () => window.location.reload();
-    const handleChainChanged = () => window.location.reload();
-
-    ethereum.on('accountsChanged', handleAccountsChanged);
-    ethereum.on('chainChanged', handleChainChanged);
-
+    service.init();
+    const unsubscribe = service.subscribe(setState);
     return () => {
-      if (ethereum.removeListener) {
-        ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        ethereum.removeListener('chainChanged', handleChainChanged);
-      }
+      unsubscribe();
+      service.destroy();
     };
-  }, []);
+  }, [service]);
 
-  // --- send transaction ---
+  const connectWallet = useCallback(() => service.connect(), [service]);
   const sendTransaction = useCallback(
-    async (method: string, args: any[] = []) => {
-      if (!contract) {
-        setTxStatus('error');
-        setTxMessage('Contract not initialised.');
-        setTimeout(() => setTxStatus('idle'), 5000);
-        return;
-      }
-      if (chainId !== targetChainId) {
-        setTxStatus('error');
-        setTxMessage('Wrong network. Please switch to the correct chain.');
-        setTimeout(() => setTxStatus('idle'), 5000);
-        return;
-      }
-
-      setTxStatus('pending');
-      setTxMessage('Waiting for confirmation...');
-      try {
-        const tx = await contract[method](...args);
-        setTxMessage('Transaction sent. Waiting for it to be mined...');
-        await tx.wait();
-        setTxStatus('success');
-        setTxMessage('Transaction successful!');
-      } catch (error: any) {
-        console.error('Transaction failed:', error);
-        setTxStatus('error');
-        setTxMessage(`Transaction failed: ${error.reason || error.message}`);
-      } finally {
-        setTimeout(() => setTxStatus('idle'), 5000);
-      }
-    },
-    [contract, chainId, targetChainId],
+    (method: string, args?: any[]) => service.sendTransaction(method, args),
+    [service],
   );
 
-  // --- context value ---
   const value: WalletContextValue = {
-    account,
-    chainId,
-    isConnected: account !== null,
-    provider,
-    signer,
-    contract,
-    txStatus,
-    txMessage,
+    ...state,
     connectWallet,
     sendTransaction,
   };
