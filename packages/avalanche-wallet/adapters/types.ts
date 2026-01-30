@@ -24,6 +24,12 @@ export interface WalletAdapter {
     method: string,
     args?: any[],
   ): Promise<TransactionResult>;
+  callContractView(
+    contractAddress: string,
+    contractABI: string,
+    method: string,
+    args?: any[],
+  ): Promise<any>;
   subscribe(handlers: AdapterEventHandlers): void;
   unsubscribe(): void;
 }

@@ -91,6 +91,19 @@ export class WalletService {
     }
   }
 
+  async callView(method: string, args: any[] = []): Promise<any> {
+    if (!this.contractAddress || !this.contractABI) {
+      throw new Error('Contract not initialised.');
+    }
+
+    return this.adapter.callContractView(
+      this.contractAddress,
+      this.contractABI,
+      method,
+      args,
+    );
+  }
+
   async sendTransaction(method: string, args: any[] = []): Promise<void> {
     if (!this.contractAddress || !this.contractABI) {
       this.update({ txStatus: 'error', txMessage: 'Contract not initialised.' });

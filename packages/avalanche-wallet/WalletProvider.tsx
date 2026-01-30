@@ -50,11 +50,16 @@ export function WalletProvider({
     (method: string, args?: any[]) => service.sendTransaction(method, args),
     [service],
   );
+  const callView = useCallback(
+    (method: string, args?: any[]) => service.callView(method, args),
+    [service],
+  );
 
   const value: WalletContextValue = {
     ...state,
     connectWallet,
     sendTransaction,
+    callView,
   };
 
   return (

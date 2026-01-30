@@ -21,6 +21,8 @@ export interface WalletActions {
   connectWallet: () => Promise<void>;
   /** Send a named contract method as a transaction */
   sendTransaction: (method: string, args?: any[]) => Promise<void>;
+  /** Call a read-only (view) contract method */
+  callView: (method: string, args?: any[]) => Promise<any>;
 }
 
 export type WalletContextValue = WalletState & WalletActions;

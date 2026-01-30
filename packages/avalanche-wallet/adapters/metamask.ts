@@ -62,6 +62,25 @@ export class MetaMaskAdapter implements WalletAdapter {
     return { hash: tx.hash };
   }
 
+  async callContractView(
+    contractAddress: string,
+    contractABI: string,
+    method: string,
+    args: any[] = [],
+  ): Promise<any> {
+    if (!this.provider) {
+      throw new Error('Wallet not connected.');
+    }
+
+    const contract = new Contract(
+      contractAddress,
+      JSON.parse(contractABI),
+      this.provider,
+    );
+
+    return contract[method](...args);
+  }
+
   subscribe(handlers: AdapterEventHandlers): void {
     const { ethereum } = window;
     if (!ethereum?.on) return;
