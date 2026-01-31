@@ -1,0 +1,220 @@
+# React + CSS Grid ゲーム描画スキル
+
+React + CSS Gridを使ったDOMベースのゲーム描画パターン。Canvas/WebGLを使わず、グリッドレイアウトでゲームボードを実装する。
+
+## 使用タイミング
+
+- グリッドベースのゲームUI実装
+- CSS Gridを使ったレイアウト設計
+- 動的オブジェクトの配置
+- ゲームUIのスタイリングとアニメーション
+
+## 技術スタック
+
+| 技術 | 用途 |
+|------|------|
+| **React** | UIコンポーネントのレンダリング |
+| **CSS Grid** | グリッドレイアウト |
+| **CSS変数** | サイズや色の一元管理 |
+| **インラインスタイル** | 動的な位置配置 |
+| **CSSアニメーション** | 視覚効果 |
+
+## 基本パターン
+
+### グリッドレイアウトの設定
+
+**CSS変数でサイズを管理:**
+```css
+:root {
+  --tile-size: 50px;
+  --grid-size: 10;
+  --grid-gap: 2px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-size), var(--tile-size));
+  grid-template-rows: repeat(var(--grid-size), var(--tile-size));
+  gap: var(--grid-gap);
+  position: relative;  /* 絶対配置の基準 */
+}
+```
+
+### タイルのレンダリング
+
+**2次元配列からタイルを生成:**
+```tsx
+{gridData.map((row, y) =>
+  row.map((tile, x) => (
+    <div key={`${y}-${x}`} className={`tile tile-${tile}`} />
+  ))
+)}
+```
+
+### 動的オブジェクトの配置
+
+**グリッド位置で配置（重要: Gridは1ベース）:**
+```tsx
+<div
+  className="object"
+  style={{
+    position: 'absolute',
+    gridColumnStart: position.x + 1,  // 配列は0ベース、Gridは1ベース
+    gridRowStart: position.y + 1,
+  }}
+/>
+```
+
+**中央揃えの計算:**
+```css
+.object {
+  transform: translate(
+    calc(var(--tile-size) * offset-ratio),
+    calc(var(--tile-size) * offset-ratio)
+  );
+}
+```
+
+## 重要なポイント
+
+### Grid位置のインデックス
+
+- **CSS Gridは1ベース**: `gridColumnStart: 1`が最初の列
+- **配列は0ベース**: `array[0][0]`が最初の要素
+- **変換が必要**: `gridColumnStart: x + 1`
+
+### 絶対配置の基準
+
+- 親要素に`position: relative`が必要
+- `gridColumnStart`/`gridRowStart`でグリッド位置を指定
+- `transform: translate()`で微調整
+
+### パフォーマンス
+
+- 小規模グリッド（10x10程度）では問題なし
+- 大規模グリッド（100x100以上）では仮想化を検討
+- Canvas/WebGLへの移行も検討可能
+
+## ベストプラクティス
+
+### CSS変数の活用
+
+- サイズをCSS変数で一元管理
+- `calc()`で動的計算
+- レスポンシブ対応が容易
+
+### パフォーマンス最適化
+
+- `key` propを適切に設定
+- 条件付きレンダリングで不要な要素を排除
+- `useCallback`/`useMemo`でメモ化
+
+### 型安全性
+
+- Propsに型定義を付ける
+- 位置情報の型を明確にする
+
+## Avalanche Wallet連携
+
+### セットアップ
+
+**WalletProviderでアプリをラップ:**
+```tsx
+<WalletProvider
+  contractAddress={process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
+  contractABI={process.env.NEXT_PUBLIC_CONTRACT_ABI}
+>
+  {children}
+</WalletProvider>
+```
+
+### useWalletフック
+
+**利用可能な状態とアクション:**
+```typescript
+interface WalletState {
+  account: string | null;
+  chainId: string | null;
+  isConnected: boolean;
+  txStatus: 'idle' | 'pending' | 'success' | 'error';
+  txMessage: string;
+}
+
+interface WalletActions {
+  connectWallet: () => Promise<void>;
+  sendTransaction: (method: string, args?: any[]) => Promise<void>;
+  callView: (method: string, args?: any[]) => Promise<any>;
+}
+```
+
+### 実装パターン
+
+**1. 状態取得:**
+```tsx
+const { callView, account } = useWallet();
+
+const fetchData = useCallback(async () => {
+  if (!account) return;
+  const result = await callView('getData', [account]);
+  setData(result);
+}, [account, callView]);
+```
+
+**2. トランザクション送信:**
+```tsx
+const { sendTransaction, callView } = useWallet();
+
+const updateData = useCallback(async () => {
+  await sendTransaction('update', [value]);
+  await fetchData();  // 状態を再取得
+}, [sendTransaction, fetchData]);
+```
+
+**3. 状態管理:**
+```tsx
+useEffect(() => {
+  if (isConnected && account) {
+    fetchData();
+  }
+}, [isConnected, account, fetchData]);
+```
+
+### エラーハンドリング
+
+- `try-catch`でエラーをキャッチ
+- `txStatus`でトランザクション状態を確認
+- ユーザーに適切なフィードバックを提供
+
+### ベストプラクティス
+
+- ウォレット接続状態を常にチェック
+- トランザクション送信後に状態を再取得
+- `useCallback`で関数をメモ化
+- `useEffect`で自動的に状態を取得
+
+## トラブルシューティング
+
+### オブジェクトが正しい位置に表示されない
+
+- Grid位置のインデックスを確認（0ベース→1ベース変換）
+- `transform`の計算を確認
+
+### タイルが重なって表示される
+
+- `gap`プロパティが設定されているか確認
+- タイルサイズが正しいか確認
+
+### アニメーションが滑らかでない
+
+- `transition`が設定されているか確認
+- `will-change: transform`でハードウェアアクセラレーションを有効化
+
+### useWalletがエラーを投げる
+
+- `WalletProvider`でラップされているか確認
+
+### トランザクションが送信されない
+
+- ウォレット接続状態を確認
+- ネットワークが正しいか確認
+- 環境変数が設定されているか確認
