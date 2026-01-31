@@ -1,7 +1,7 @@
 ---
 name: game-development
-description: Game development orchestrator. Routes to platform-specific skills based on project needs.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+description: Game development orchestrator. Routes to core sub-skills for this project.
+allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 # Game Development
@@ -18,30 +18,11 @@ You are working on a game development project. This skill teaches the PRINCIPLES
 
 ## Sub-Skill Routing
 
-### Platform Selection
-
-| If the game targets... | Use Sub-Skill |
-|------------------------|---------------|
-| Web browsers (HTML5, WebGL) | `game-development/web-games` |
-| Mobile (iOS, Android) | `game-development/mobile-games` |
-| PC (Steam, Desktop) | `game-development/pc-games` |
-| VR/AR headsets | `game-development/vr-ar` |
-
-### Dimension Selection
-
-| If the game is... | Use Sub-Skill |
-|-------------------|---------------|
-| 2D (sprites, tilemaps) | `game-development/2d-games` |
-| 3D (meshes, shaders) | `game-development/3d-games` |
-
-### Specialty Areas
-
 | If you need... | Use Sub-Skill |
 |----------------|---------------|
+| Web browser rendering & React integration | `game-development/web-games` |
+| 2D sprites, tilemaps, and graphics patterns | `game-development/2d-games` |
 | GDD, balancing, player psychology | `game-development/game-design` |
-| Multiplayer, networking | `game-development/multiplayer` |
-| Visual style, asset pipeline, animation | `game-development/game-art` |
-| Sound design, music, adaptive audio | `game-development/game-audio` |
 
 ---
 
@@ -152,16 +133,5 @@ Abstract input into ACTIONS, not raw keys:
 → Start with `game-development/web-games` for framework selection
 → Then `game-development/2d-games` for sprite/tilemap patterns
 → Reference `game-development/game-design` for level design
-
-### Example 2: "Mobile puzzle game for iOS and Android"
-→ Start with `game-development/mobile-games` for touch input and stores
-→ Use `game-development/game-design` for puzzle balancing
-
-### Example 3: "Multiplayer VR shooter"
-→ `game-development/vr-ar` for comfort and immersion
-→ `game-development/3d-games` for rendering
-→ `game-development/multiplayer` for networking
-
----
 
 > **Remember:** Great games come from iteration, not perfection. Prototype fast, then polish.
