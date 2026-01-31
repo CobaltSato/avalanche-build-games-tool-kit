@@ -1,150 +1,193 @@
 ---
 name: web-games
-description: Web browser game development principles. Framework selection, WebGPU, optimization, PWA.
+description: PixiJS v8 + Next.js 14 integration patterns for Neon Grid Runner.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
-# Web Browser Game Development
+# Web Games - PixiJS + Next.js Integration
 
-> Framework selection and browser-specific principles.
+> Rendering, React integration, and browser-specific patterns for this project.
 
 ---
 
-## 1. Framework Selection
+## 1. Current Stack
 
-### Decision Tree
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| **Renderer** | PixiJS v8 (vanilla) | WebGL, `preference: 'webgl'` |
+| **React integration** | Ref-based (`useRef` + `useEffect`) | NOT `@pixi/react` |
+| **Framework** | Next.js 14 App Router | All game components are `'use client'` |
+| **Styling** | CSS3 (walk.css) | Neon theme, canvas has transparent background |
+
+---
+
+## 2. PixiJS v8 API Reference
+
+### Application Lifecycle
+
+```typescript
+// v8 uses async init (NOT constructor options like v7)
+const app = new Application();
+await app.init({
+  width, height,
+  backgroundAlpha: 0,
+  antialias: true,
+  resolution: window.devicePixelRatio || 1,
+  autoDensity: true,
+  preference: 'webgl',
+});
+container.appendChild(app.canvas);  // v8: app.canvas (NOT app.view)
+
+// Cleanup
+app.destroy(true, { children: true });
+```
+
+### Graphics API (v8 method chaining)
+
+```typescript
+const g = new Graphics();
+
+// Shapes
+g.roundRect(x, y, w, h, radius);
+g.circle(cx, cy, radius);
+g.rect(x, y, w, h);
+
+// Fill (call after shape)
+g.fill({ color: 0xff00ff, alpha: 1 });
+
+// Clear and redraw
+g.clear();
+
+// Transform
+g.pivot.set(cx, cy);
+g.position.set(cx, cy);
+g.scale.set(1.05);
+```
+
+### Ticker (Animation Loop)
+
+```typescript
+app.ticker.add((ticker) => {
+  const deltaMS = ticker.deltaMS;  // ms since last frame
+  // animation logic here
+});
+```
+
+---
+
+## 3. React Integration Pattern
+
+The game board is a **leaf component** -- props flow in, nothing flows out. This pattern works:
 
 ```
-What type of game?
-│
-├── 2D Game
-│   ├── Full game engine features? → Phaser
-│   └── Raw rendering power? → PixiJS
-│
-├── 3D Game
-│   ├── Full engine (physics, XR)? → Babylon.js
-│   └── Rendering focused? → Three.js
-│
-└── Hybrid / Canvas
-    └── Custom → Raw Canvas/WebGL
+React State (useWalkGame)
+    │
+    ├── playerPos, isInitialized, gameMap
+    │
+    ▼
+PixiGameBoard (useEffect syncs props → PixiJS)
+    │
+    ├── useEffect([]) -- create Application, draw tiles, start ticker
+    ├── useEffect([gameMap]) -- redraw tiles
+    ├── useEffect([playerPos, isInitialized]) -- redraw player
+    │
+    ▼
+Canvas Element (managed by PixiJS, appended to ref div)
 ```
 
-### Comparison (2025)
+### Key Files
 
-| Framework | Type | Best For |
-|-----------|------|----------|
-| **Phaser 4** | 2D | Full game features |
-| **PixiJS 8** | 2D | Rendering, UI |
-| **Three.js** | 3D | Visualizations, lightweight |
-| **Babylon.js 7** | 3D | Full engine, XR |
+| File | Role |
+|------|------|
+| `packages/walk-game/components/PixiGameBoard.tsx` | Canvas renderer |
+| `packages/walk-game/useWalkGame.ts` | Game state + input + wallet |
+| `packages/walk-game/WalkGameClient.tsx` | Composes UI chrome + GameBoard |
+| `app/walk.css` | Neon theme (background, modal, buttons only) |
 
----
+### Critical Rules
 
-## 2. WebGPU Adoption
+1. **Always `'use client'`** -- PixiJS accesses `window`, `document`, WebGL
+2. **Create Application in `useEffect`** -- never in render or at module level
+3. **Handle React 18 Strict Mode** -- use `destroyed` flag in async init:
+   ```typescript
+   let destroyed = false;
+   (async () => {
+     await app.init({...});
+     if (destroyed) { app.destroy(true); return; }
+     // proceed
+   })();
+   return () => { destroyed = true; app.destroy(true, { children: true }); };
+   ```
+4. **Separate static and dynamic layers** -- tiles drawn once, player redrawn on state change
+5. **Use refs for ticker access** -- store latest props in `useRef` so ticker callbacks read fresh values without re-registering
 
-### Browser Support (2025)
+### SSR Fallback
 
-| Browser | Support |
-|---------|---------|
-| Chrome | ✅ Since v113 |
-| Edge | ✅ Since v113 |
-| Firefox | ✅ Since v131 |
-| Safari | ✅ Since 18.0 |
-| **Total** | **~73%** global |
+If Next.js SSR errors occur with PixiJS imports:
 
-### Decision
-
-- **New projects**: Use WebGPU with WebGL fallback
-- **Legacy support**: Start with WebGL
-- **Feature detection**: Check `navigator.gpu`
-
----
-
-## 3. Performance Principles
-
-### Browser Constraints
-
-| Constraint | Strategy |
-|------------|----------|
-| No local file access | Asset bundling, CDN |
-| Tab throttling | Pause when hidden |
-| Mobile data limits | Compress assets |
-| Audio autoplay | Require user interaction |
-
-### Optimization Priority
-
-1. **Asset compression** - KTX2, Draco, WebP
-2. **Lazy loading** - Load on demand
-3. **Object pooling** - Avoid GC
-4. **Draw call batching** - Reduce state changes
-5. **Web Workers** - Offload heavy computation
+```typescript
+import dynamic from 'next/dynamic';
+const GameBoard = dynamic(() => import('./components/PixiGameBoard').then(m => m.PixiGameBoard), {
+  ssr: false,
+});
+```
 
 ---
 
-## 4. Asset Strategy
+## 4. Performance Considerations
 
-### Compression Formats
+### Current Budget
 
-| Type | Format |
-|------|--------|
-| Textures | KTX2 + Basis Universal |
-| Audio | WebM/Opus (fallback: MP3) |
-| 3D Models | glTF + Draco/Meshopt |
+| Component | Draw Calls | Notes |
+|-----------|-----------|-------|
+| Tile layer | 1 Graphics object | 100 roundRects batched in one Graphics |
+| Player layer | 1 Graphics object | 1 circle, redrawn on move |
+| Ticker | 1 callback | Pulse animation (scale sin wave) |
+| **Total** | ~2 draw calls | Extremely lightweight |
 
-### Loading Strategy
+### When to Upgrade
 
-| Phase | Load |
-|-------|------|
-| Startup | Core assets, <2MB |
-| Gameplay | Stream on demand |
-| Background | Prefetch next level |
+| Trigger | Action |
+|---------|--------|
+| Need sprites/textures | Use `Sprite` + `Texture` instead of Graphics |
+| Need many entities (>100) | Use `Container` + object pooling |
+| Need particles | Use `@pixi/particle-emitter` |
+| Need text on canvas | Use `Text` or `BitmapText` |
+| Performance issues | Profile with `app.ticker.FPS`, Chrome DevTools |
 
----
+### HiDPI Rendering
 
-## 5. PWA for Games
-
-### Benefits
-
-- Offline play
-- Install to home screen
-- Full screen mode
-- Push notifications
-
-### Requirements
-
-- Service worker for caching
-- Web app manifest
-- HTTPS
+Already configured: `resolution: window.devicePixelRatio` + `autoDensity: true`. The canvas internal buffer is scaled up while CSS size stays logical. No additional handling needed.
 
 ---
 
-## 6. Audio Handling
+## 5. Visual Style Constants
 
-### Browser Requirements
+Extracted from the original CSS, now in `PixiGameBoard.tsx`:
 
-- Audio context requires user interaction
-- Create AudioContext on first click/tap
-- Resume context if suspended
+| Element | Color | Alpha |
+|---------|-------|-------|
+| Floor tile | `0xffffff` | 0.1 |
+| Wall tile | `0x646478` | 0.5 |
+| Goal tile | `0xffd700` (gold) | 1.0 |
+| Player | `0xff00ff` (magenta) | 1.0 |
+| Canvas background | transparent | 0 |
 
-### Best Practices
-
-- Use Web Audio API
-- Pool audio sources
-- Preload common sounds
-- Compress with WebM/Opus
-
----
-
-## 7. Anti-Patterns
-
-| ❌ Don't | ✅ Do |
-|----------|-------|
-| Load all assets upfront | Progressive loading |
-| Ignore tab visibility | Pause when hidden |
-| Block on audio load | Lazy load audio |
-| Skip compression | Compress everything |
-| Assume fast connection | Handle slow networks |
+Tile size: 50px, gap: 2px, board: 518px x 518px, border radius: 4px.
 
 ---
 
-> **Remember:** Browser is the most accessible platform. Respect its constraints.
+## 6. Anti-Patterns
+
+| Don't | Do |
+|-------|-----|
+| Use `@pixi/react` for simple leaf components | Vanilla PixiJS with ref-based integration |
+| Create Application synchronously (v8 is async) | `await app.init()` in useEffect |
+| Redraw tiles on every player move | Separate Graphics layers (static vs dynamic) |
+| Forget cleanup on unmount | `app.destroy(true, { children: true })` |
+| Import PixiJS at module top-level in SSR | Guard with `'use client'` or dynamic import |
+| Register new ticker callbacks on every render | Register once in init useEffect, read props via refs |
+
+---
+
+> **Remember:** PixiJS handles the render loop. React handles the state. The bridge is `useEffect`.
