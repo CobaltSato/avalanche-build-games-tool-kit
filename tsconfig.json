@@ -17,7 +17,9 @@
       "@avalanche-wallet/*": ["./packages/avalanche-wallet/*"],
       "@avalanche-wallet": ["./packages/avalanche-wallet"],
       "@walk-game/*": ["./packages/walk-game/*"],
-      "@walk-game": ["./packages/walk-game"]
+      "@walk-game": ["./packages/walk-game"],
+      "@pixi-engine/*": ["./packages/pixi-engine/*"],
+      "@pixi-engine": ["./packages/pixi-engine"]
     },
     "plugins": [
       {

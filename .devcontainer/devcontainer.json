@@ -19,7 +19,7 @@
       "onAutoForward": "openPreview"
     }
   },
-  "postCreateCommand": "npm ci && npm install -g @google/gemini-cli",
+  "postCreateCommand": "npm ci && npm install -g @google/gemini-cli && curl -fsSL https://claude.ai/install.sh | bash",
   "customizations": {
     "vscode": {
       "settings": {

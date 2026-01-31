@@ -1,116 +1,119 @@
 # Avalanche Game Toolkit
 
-Avalanche ネットワーク対応の dApp 開発を素早く始めるための Next.js スターターキット。
-ウォレット接続やスマートコントラクト呼び出しといったブロックチェーン固有の複雑さを内部パッケージに吸収し、アプリケーション層はビジネスロジックだけに集中できる設計になっている。
+Avalanche ネットワーク対応のブロックチェーンゲームを素早く開発するための Next.js モノレポスターターキット。
 
-## ソフトウェア構成
+ウォレット接続・コントラクト呼び出し・2D ゲームレンダリングといった横断的関心事を内部パッケージに吸収し、**ゲーム固有のロジックだけに集中**できる設計になっている。
 
-### アーキテクチャ概要
+## アーキテクチャ
 
-依存関係吸収パターン（Dependency Absorption）を採用したレイヤードアーキテクチャ。
-外部ライブラリの直接参照をアプリケーション層から排除し、内部パッケージがそれらを吸収・抽象化する。
+依存関係吸収パターン（Dependency Absorption）を採用した 3 層レイヤードアーキテクチャ。
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Application Layer (app/)                        │
-│  Next.js 14 App Router                           │
-│  - layout.tsx … WalletProvider で全体をラップ      │
-│  - page.tsx  … ゲーム / dApp の UI                │
-│                                                  │
-│  ※ ethers への直接依存なし                          │
-└────────────────────┬─────────────────────────────┘
-                     │ import @avalanche-wallet
-                     ▼
-┌──────────────────────────────────────────────────┐
-│  Wallet Package (packages/avalanche-wallet/)     │
-│  ブロックチェーン操作を吸収する抽象化レイヤー            │
-│                                                  │
-│  WalletProvider.tsx … React Context による状態管理  │
-│  useWallet.ts       … 型安全なカスタムフック         │
-│  types.ts           … 公開型定義                   │
-│  index.ts           … バレルエクスポート             │
-│                                                  │
-│  吸収する外部依存: ethers (BrowserProvider,         │
-│                    Contract, Signer)             │
-└────────────────────┬─────────────────────────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────┐
-│  External Dependencies                           │
-│  ethers ^6  … Ethereum/Avalanche JSON-RPC        │
-│  react ^18  … UI フレームワーク                     │
-│  next 14    … SSR / ルーティング                    │
-└──────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│  Application Layer  (app/)                              │
+│  Next.js 14 App Router                                  │
+│                                                         │
+│  ゲーム固有の UI・ページ構成                                │
+│  ※ ethers / pixi.js への直接依存なし                       │
+└──────────┬──────────────────────┬───────────────────────┘
+           │                      │
+           ▼                      ▼
+┌────────────────────┐  ┌─────────────────────────────────┐
+│  @avalanche-wallet │  │  @pixi-engine                   │
+│                    │  │                                 │
+│  ウォレット接続      │  │  Pixi.js Application 管理       │
+│  Tx 送信 / View 呼出│  │  Scene ライフサイクル             │
+│  チェーン設定        │  │  キーボード入力                   │
+│                    │  │                                 │
+│  吸収: ethers ^6   │  │  吸収: pixi.js ^8               │
+└────────────────────┘  └─────────────────────────────────┘
 ```
 
-### 依存関係吸収の仕組み
+各パッケージは TypeScript パスエイリアス (`@avalanche-wallet`, `@pixi-engine`) で参照され、Next.js の `transpilePackages` でビルドに組み込まれる。外部ライブラリの差し替え・バージョンアップの影響範囲がパッケージ内に閉じるため、アプリケーション層の変更が不要になる。
 
-| 仕組み | 設定箇所 |
-|--------|----------|
-| TypeScript パスエイリアス | `tsconfig.json` → `@avalanche-wallet` / `@avalanche-wallet/*` |
-| Next.js トランスパイル | `next.config.mjs` → `transpilePackages: ['@avalanche-wallet']` |
-| バレルエクスポート | `packages/avalanche-wallet/index.ts` |
-
-アプリケーション層は `@avalanche-wallet` だけを import し、`ethers` を直接 import することはない。
-ブロックチェーンライブラリの差し替えやバージョンアップの影響範囲が Wallet Package 内に閉じるため、アプリケーション側の変更が不要になる。
-
-### ディレクトリ構成
+## ディレクトリ構成
 
 ```
 .
-├── app/                            # Next.js App Router
-│   ├── layout.tsx                  #   ルートレイアウト (WalletProvider)
-│   ├── page.tsx                    #   ホームページ
-│   ├── globals.css                 #   グローバルスタイル
-│   └── page.module.css             #   ページスコープスタイル
+├── app/                                # Next.js App Router
+│   ├── layout.tsx                      #   ルートレイアウト (Provider)
+│   ├── page.tsx                        #   ホームページ
+│   └── *.css                           #   スタイル
+│
 ├── packages/
-│   └── avalanche-wallet/           # ウォレット抽象化パッケージ
-│       ├── WalletProvider.tsx      #   Context Provider
-│       ├── useWallet.ts            #   カスタムフック
-│       ├── types.ts                #   型定義
-│       └── index.ts                #   バレルエクスポート
-├── types/
-│   └── window.d.ts                 # EIP-1193 グローバル型拡張
-├── next.config.mjs                 # Next.js 設定
-├── tsconfig.json                   # TypeScript 設定 (パスエイリアス)
-├── package.json                    # 依存関係 & スクリプト
-└── .env.local.example              # 環境変数テンプレート
+│   ├── avalanche-wallet/               # ウォレット抽象化
+│   │   ├── WalletProvider.tsx          #   React Context Provider
+│   │   ├── useWallet.ts               #   カスタムフック
+│   │   ├── service/WalletService.ts   #   コアロジック (Observer)
+│   │   ├── adapters/metamask.ts       #   MetaMask アダプタ
+│   │   ├── chains/                    #   チェーン定義 (Fuji / Mainnet)
+│   │   └── types.ts                   #   公開型定義
+│   │
+│   └── pixi-engine/                    # 汎用 2D ゲームエンジン
+│       ├── types.ts                   #   Scene / EngineConfig 等
+│       ├── usePixiEngine.ts           #   Application ライフサイクルフック
+│       ├── useKeyboardInput.ts        #   キーボード入力フック
+│       └── PixiStage.tsx              #   React コンポーネント
+│
+├── types/window.d.ts                   # EIP-1193 グローバル型拡張
+├── tsconfig.json                       # パスエイリアス設定
+├── next.config.mjs                     # transpilePackages 設定
+└── .env.local.example                  # 環境変数テンプレート
 ```
 
-### 主要コンポーネント
+## パッケージ詳細
 
-#### WalletProvider
+### @avalanche-wallet
 
-React Context API を使い、ウォレット状態をアプリケーション全体に提供する。
-
-- MetaMask 検出とアカウント接続
-- ネットワーク（Chain ID）の検証
-- ethers `Contract` インスタンスの自動生成
-- `accountsChanged` / `chainChanged` イベントのハンドリング
-
-#### useWallet
-
-`WalletProvider` 配下でウォレットの状態と操作にアクセスするためのカスタムフック。
+ブロックチェーン操作を React アプリから簡潔に利用するための抽象化レイヤー。
 
 ```tsx
-const { account, isConnected, connectWallet, sendTransaction } = useWallet();
+// Provider でラップ
+<WalletProvider chain={avalancheFuji} adapter={metamaskAdapter} contractAddress={addr} contractABI={abi}>
+  <App />
+</WalletProvider>
+
+// フックで利用
+const { account, isConnected, connectWallet, sendTransaction, callView } = useWallet();
 ```
 
-#### sendTransaction
+**主な機能:**
+- MetaMask 検出・アカウント接続
+- チェーン ID 検証・自動切り替え
+- `sendTransaction(method, args)` — コントラクトへの書き込み（Tx 送信 → マイニング待機 → ステータス管理）
+- `callView(method, args)` — コントラクトの読み取り（ガス不要）
+- アカウント / チェーン変更の自動検知
 
-スマートコントラクトのメソッドをトランザクションとして実行する。
-ネットワーク検証 → Tx 送信 → マイニング待機 → ステータス更新 のライフサイクルを内部で管理する。
+**アダプタパターン:** `WalletAdapter` インターフェースを実装すれば MetaMask 以外のウォレットにも対応可能。
 
-### 技術スタック
+### @pixi-engine
 
-| カテゴリ | 技術 |
-|----------|------|
-| フレームワーク | Next.js 14 (App Router) |
-| 言語 | TypeScript 5 |
-| UI | React 18 |
-| ブロックチェーン | ethers.js 6 |
-| 対象ネットワーク | Avalanche C-Chain (デフォルト: Fuji Testnet `0xa869`) |
-| ウォレット | MetaMask (EIP-1193) |
+Pixi.js の Application ライフサイクルを React と統合する薄い汎用レイヤー。
+
+```tsx
+import { PixiStage, type Scene } from '@pixi-engine';
+
+const scene: Scene = {
+  setup(app, stage) { /* Graphics / Sprite を stage に追加 */ },
+  update(deltaMS)   { /* 毎フレーム呼ばれる */ },
+  destroy()         { /* クリーンアップ */ },
+};
+
+<PixiStage config={{ width: 800, height: 600 }} scene={scene} />
+```
+
+**公開 API:**
+
+| エクスポート | 種類 | 説明 |
+|---|---|---|
+| `Scene` | interface | `setup` / `update` / `destroy` を実装するゲームシーン |
+| `EngineConfig` | interface | Application の初期化設定 (width, height, antialias 等) |
+| `InputHandler` | interface | `onKeyDown` / `onKeyUp` コールバック |
+| `usePixiEngine(config, scene)` | hook | Application 管理 + Scene オーケストレーション |
+| `useKeyboardInput(handler)` | hook | キーボードイベントリスナー管理 |
+| `PixiStage` | component | usePixiEngine の宣言的ラッパー |
+
+**新しいゲームを作るには:** `Scene` インターフェースを実装するだけ。エンジンが Application の初期化・Ticker 管理・DOM マウント・破棄を自動で行う。
 
 ## セットアップ
 
@@ -124,6 +127,18 @@ npm run dev
 ## 環境変数
 
 | 変数名 | 説明 |
-|--------|------|
+|---|---|
 | `NEXT_PUBLIC_CONTRACT_ADDRESS` | デプロイ済みスマートコントラクトのアドレス |
 | `NEXT_PUBLIC_CONTRACT_ABI` | コントラクト ABI (JSON 文字列) |
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---|---|
+| フレームワーク | Next.js 14 (App Router) |
+| 言語 | TypeScript 5 |
+| UI | React 18 |
+| 2D レンダリング | Pixi.js 8 |
+| ブロックチェーン | ethers.js 6 |
+| 対象ネットワーク | Avalanche C-Chain (Fuji Testnet / Mainnet) |
+| ウォレット | MetaMask (EIP-1193) |
