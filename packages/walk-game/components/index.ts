@@ -1,1 +1,1 @@
-export { GameBoard } from './GameBoard';
+export { PixiGameBoard as GameBoard } from './PixiGameBoard';

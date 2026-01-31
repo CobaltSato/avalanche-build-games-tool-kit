@@ -2,7 +2,7 @@
 
 import { avalancheFuji } from '@avalanche-wallet';
 import { useWalkGame } from './useWalkGame';
-import { GameBoard } from './components/GameBoard';
+import { GameBoard } from './components';
 
 export function WalkGameClient() {
   const {
