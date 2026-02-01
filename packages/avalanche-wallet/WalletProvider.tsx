@@ -20,6 +20,7 @@ export function WalletProvider({
   contractAddress,
   contractABI,
   children,
+  onNetworkChange,
 }: WalletProviderProps) {
   const serviceRef = useRef<WalletService | null>(null);
 
@@ -29,6 +30,7 @@ export function WalletProvider({
       chain,
       contractAddress,
       contractABI,
+      onNetworkChange,
     );
   }
 

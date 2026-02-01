@@ -17,6 +17,7 @@ export class WalletService {
   private chain: ChainConfig;
   private contractAddress?: string;
   private contractABI?: string;
+  private onNetworkChangeCallback?: (chainId: number) => void;
 
   private state: WalletServiceState = {
     account: null,
@@ -33,11 +34,13 @@ export class WalletService {
     chain: ChainConfig,
     contractAddress?: string,
     contractABI?: string,
+    onNetworkChange?: (chainId: number) => void,
   ) {
     this.adapter = adapter;
     this.chain = chain;
     this.contractAddress = contractAddress;
     this.contractABI = contractABI;
+    this.onNetworkChangeCallback = onNetworkChange;
   }
 
   getState(): WalletServiceState {
@@ -64,7 +67,12 @@ export class WalletService {
   init(): void {
     this.adapter.subscribe({
       onAccountsChanged: () => window.location.reload(),
-      onChainChanged: () => window.location.reload(),
+      onChainChanged: (newChainId: string) => {
+        this.update({ chainId: newChainId });
+        if (this.onNetworkChangeCallback) {
+          this.onNetworkChangeCallback(Number(newChainId));
+        }
+      },
     });
   }
 

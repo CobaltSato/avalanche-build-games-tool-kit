@@ -37,4 +37,6 @@ export interface WalletProviderProps {
   /** Contract ABI as a JSON string (typically from env var) */
   contractABI?: string;
   children: React.ReactNode;
+  /** Callback for when the connected network changes */
+  onNetworkChange?: (chainId: number) => void;
 }
