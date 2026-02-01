@@ -102,12 +102,12 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <main className="game-main">
       <h1>Avalanche Game Toolkit</h1>
       {!isConnected ? (
         <>
           <p>Connect your wallet to start playing!</p>
-          <button onClick={connectWallet} style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}>
+          <button onClick={connectWallet} className="button">
             Connect Wallet
           </button>
         </>
@@ -119,26 +119,26 @@ export default function Home() {
           ) : (
             <>
               <p>Player not initialized. Initialize your position to start.</p>
-              <button onClick={handleInitialize} style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}>
+              <button onClick={handleInitialize} className="button">
                 Initialize Player
               </button>
             </>
           )}
 
           {txStatus !== 'idle' && (
-            <p>Transaction Status: {txStatus} - {txMessage}</p>
+            <p className={`tx-status ${txStatus}`}>Transaction Status: {txStatus} - {txMessage}</p>
           )}
         </>
       )}
-      <div className="grid-container" style={{ marginTop: '20px' }}>
+      <div className="grid-container">
         {gridItems}
         {isConnected && isInitialized && (
           <div
             className="player"
             style={{
-              gridColumnStart: playerX + 1,
-              gridRowStart: playerY + 1,
-            }}
+              '--player-x': playerX,
+              '--player-y': playerY,
+            } as React.CSSProperties}
           >
             P
           </div>
@@ -147,5 +147,6 @@ export default function Home() {
     </main>
   );
 }
+
 
 

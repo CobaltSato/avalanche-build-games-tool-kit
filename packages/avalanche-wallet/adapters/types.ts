@@ -11,7 +11,7 @@ export interface TransactionResult {
 
 export interface AdapterEventHandlers {
   onAccountsChanged: () => void;
-  onChainChanged: () => void;
+  onChainChanged: (newChainId: string) => void;
 }
 
 export interface WalletAdapter {
