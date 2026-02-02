@@ -75,16 +75,6 @@
   position: relative;
 }
 
-.vercelLogo {
-  filter: invert(1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .vercelLogo {
-    filter: invert(0);
-  }
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(25%, auto));
@@ -208,31 +198,6 @@
       rgb(var(--background-end-rgb)) 40%
     );
     z-index: 1;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .description p {
-    background-color: rgba(var(--callout-rgb), 0.5);
-    border: 1px solid rgba(var(--callout-border-rgb), 0.3);
-  }
-
-  .card {
-    background: rgba(var(--card-rgb), 0);
-    border: 1px solid rgba(var(--card-border-rgb), 0);
-  }
-
-  .card:hover {
-    background: rgba(var(--card-rgb), 0.1);
-    border: 1px solid rgba(var(--card-border-rgb), 0.15);
-  }
-
-  .center::before {
-    background: var(--secondary-glow);
-  }
-
-  .center::after {
-    background: var(--primary-glow);
   }
 }
 
