@@ -112,8 +112,6 @@ description: スキルの説明（Gemini がいつ使うか判断する材料）
 ```bash
 gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/react-css-grid-game-rendering.skill --scope workspace
 
-gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/avax-like-frontend-design.skill --scope workspace
-
 gemini extensions install https://github.com/ankitchiplunkar/frontend-design
 ```
 
