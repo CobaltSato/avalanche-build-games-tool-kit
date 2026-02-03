@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #F4F6F6; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { background: #1C2833; padding: 20pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 20pt 30pt; display: flex; gap: 25pt; }
+.left { flex: 1; }
+.right { flex: 1.2; }
+.step { display: flex; align-items: center; margin-bottom: 15pt; }
+.circle { width: 50pt; height: 50pt; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15pt; }
+.red { background: #E74C3C; }
+.green { background: #27AE60; }
+.blue { background: #3498DB; }
+.circle p { color: #ffffff; font-size: 10pt; font-weight: bold; margin: 0; text-align: center; }
+.step-text h3 { color: #1C2833; font-size: 14pt; margin: 0 0 5pt 0; }
+.step-text p { color: #5D6D7E; font-size: 10pt; margin: 0; }
+.code-block { background: #2E4053; padding: 12pt; border-radius: 6pt; margin-bottom: 10pt; }
+.code-block p { color: #5DADE2; font-size: 9pt; margin: 0 0 4pt 0; font-family: Courier New, monospace; }
+h2 { color: #1C2833; font-size: 14pt; margin: 0 0 10pt 0; }
+</style>
+</head>
+<body>
+<div class="header"><h1>TDD ワークフロー</h1></div>
+<div class="content">
+  <div class="left">
+    <div class="step">
+      <div class="circle red"><p>RED</p></div>
+      <div class="step-text">
+        <h3>テストを書く</h3>
+        <p>失敗することを確認</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="circle green"><p>GREEN</p></div>
+      <div class="step-text">
+        <h3>最小限の実装</h3>
+        <p>テストを通す</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="circle blue"><p>REFACTOR</p></div>
+      <div class="step-text">
+        <h3>コードを改善</h3>
+        <p>品質を上げる</p>
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <h2>実践例：-10ボタンの追加</h2>
+    <div class="code-block">
+      <p>// 1. RED - テストを先に書く</p>
+      <p>test("should decrement by 10", ...)</p>
+      <p>→ 失敗（ボタンがない）</p>
+    </div>
+    <div class="code-block">
+      <p>// 2. GREEN - 実装</p>
+      <p>onClick={() => setCount(c => Math.max(0, c-10))}</p>
+      <p>→ 成功</p>
+    </div>
+    <div class="code-block">
+      <p>// 3. REFACTOR - 改善</p>
+      <p>セレクタを { exact: true } で厳密化</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

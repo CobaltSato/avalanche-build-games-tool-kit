@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #1A1A2E; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1A1A2E; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #E84142; padding: 20pt 40pt;
+  display: flex; align-items: center;
+}
+.phase-badge {
+  background: #FFFFFF; color: #E84142; font-size: 14pt;
+  padding: 5pt 15pt; border-radius: 20pt; margin-right: 20pt;
+  font-weight: bold;
+}
+.header h1 {
+  color: #FFFFFF; font-size: 28pt; margin: 0;
+}
+.content {
+  padding: 20pt 40pt; display: flex; gap: 25pt;
+}
+.left { flex: 1.2; }
+.right { flex: 0.8; }
+h2 { color: #16A085; font-size: 16pt; margin: 0 0 12pt 0; }
+.prompt-box {
+  background: #252540; border-radius: 8pt; padding: 15pt;
+  border-left: 4pt solid #E84142;
+}
+.prompt-box p {
+  color: #CCCCCC; font-size: 11pt; margin: 0 0 8pt 0; line-height: 1.5;
+}
+.prompt-box p:last-child { margin-bottom: 0; }
+.highlight { color: #E84142; }
+.tool-table {
+  background: #252540; border-radius: 8pt; padding: 15pt;
+}
+.tool-row {
+  display: flex; margin-bottom: 8pt; padding-bottom: 8pt;
+  border-bottom: 1pt solid #333355;
+}
+.tool-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.tool-name { color: #16A085; font-size: 10pt; width: 70pt; font-family: Courier New, monospace; }
+.tool-desc { color: #CCCCCC; font-size: 10pt; }
+</style>
+</head>
+<body>
+<div class="header">
+  <p class="phase-badge">Phase 2</p>
+  <h1>Smart Contract Creation</h1>
+</div>
+<div class="content">
+  <div class="left">
+    <h2>Prompt to Gemini</h2>
+    <div class="prompt-box">
+      <p>プレイヤーの <span class="highlight">10x10 座標</span>を保存・取得できるコントラクトを作成して。</p>
+      <p><span class="highlight">要件:</span></p>
+      <p>- 位置を初期化する関数</p>
+      <p>- 1歩移動する関数（上下左右）</p>
+      <p>- 座標は 0-9 の範囲に制限</p>
+      <p></p>
+      <p><span class="highlight">出力先:</span></p>
+      <p>- Solidity: contracts/PositionTracker.sol</p>
+      <p>- ABI: .env.local.example に追記</p>
+    </div>
+  </div>
+  <div class="right">
+    <h2>Gemini Tools</h2>
+    <div class="tool-table">
+      <div class="tool-row">
+        <p class="tool-name">read_file</p>
+        <p class="tool-desc">ファイル読み取り</p>
+      </div>
+      <div class="tool-row">
+        <p class="tool-name">write_file</p>
+        <p class="tool-desc">ファイル作成</p>
+      </div>
+      <div class="tool-row">
+        <p class="tool-name">edit_file</p>
+        <p class="tool-desc">部分編集</p>
+      </div>
+      <div class="tool-row">
+        <p class="tool-name">run_shell</p>
+        <p class="tool-desc">シェル実行</p>
+      </div>
+      <div class="tool-row">
+        <p class="tool-name">web_fetch</p>
+        <p class="tool-desc">URL取得</p>
+      </div>
+    </div>
+
+    <h2>Output Files</h2>
+    <div class="tool-table">
+      <div class="tool-row">
+        <p class="tool-desc">contracts/PositionTracker.sol</p>
+      </div>
+      <div class="tool-row">
+        <p class="tool-desc">.env.local.example (ABI)</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

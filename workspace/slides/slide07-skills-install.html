@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #1A1A2E; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1A1A2E; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #16A085; padding: 20pt 40pt;
+}
+.header h1 {
+  color: #FFFFFF; font-size: 28pt; margin: 0;
+}
+.content {
+  padding: 20pt 40pt;
+}
+h2 { color: #E84142; font-size: 16pt; margin: 0 0 12pt 0; }
+.code-block {
+  background: #0D0D1A; border-radius: 8pt; padding: 15pt;
+  margin-bottom: 15pt; border-left: 3pt solid #16A085;
+}
+.code-block p {
+  color: #88FF88; font-size: 10pt; margin: 0 0 6pt 0;
+  font-family: Courier New, monospace;
+}
+.code-block p:last-child { margin-bottom: 0; }
+.code-comment { color: #666688 !important; }
+.two-col { display: flex; gap: 25pt; margin-top: 15pt; }
+.col { flex: 1; }
+.cmd-table {
+  background: #252540; border-radius: 8pt; padding: 12pt;
+}
+.cmd-row {
+  display: flex; margin-bottom: 6pt;
+}
+.cmd-row:last-child { margin-bottom: 0; }
+.cmd-name { color: #16A085; font-size: 10pt; width: 100pt; font-family: Courier New, monospace; }
+.cmd-desc { color: #CCCCCC; font-size: 10pt; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Skill Installation</h1>
+</div>
+<div class="content">
+  <h2>Method A: Install from URL (Recommended)</h2>
+  <div class="code-block">
+    <p>gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/react-css-grid-game-rendering.skill --scope workspace</p>
+    <p></p>
+    <p>gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/avax-like-frontend-design.skill --scope workspace</p>
+  </div>
+
+  <div class="two-col">
+    <div class="col">
+      <h2>Reload Skills</h2>
+      <div class="code-block">
+        <p class="code-comment"># Gemini CLI 内で実行</p>
+        <p>/skills reload</p>
+        <p>/skills list</p>
+      </div>
+    </div>
+    <div class="col">
+      <h2>Management Commands</h2>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <p class="cmd-name">skills list</p>
+          <p class="cmd-desc">スキル一覧</p>
+        </div>
+        <div class="cmd-row">
+          <p class="cmd-name">skills enable</p>
+          <p class="cmd-desc">有効化</p>
+        </div>
+        <div class="cmd-row">
+          <p class="cmd-name">skills disable</p>
+          <p class="cmd-desc">無効化</p>
+        </div>
+        <div class="cmd-row">
+          <p class="cmd-name">skills uninstall</p>
+          <p class="cmd-desc">削除</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

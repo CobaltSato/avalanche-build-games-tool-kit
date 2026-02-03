@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1C2833; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { padding: 25pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 0 30pt; display: flex; gap: 20pt; }
+.card { flex: 1; background: #2E4053; padding: 20pt; border-radius: 8pt; }
+.card h2 { color: #F39C12; font-size: 14pt; margin: 0 0 12pt 0; }
+.card p { color: #AAB7B8; font-size: 11pt; margin: 0 0 8pt 0; }
+.highlight { color: #5DADE2; font-family: Courier New, monospace; font-size: 10pt; }
+</style>
+</head>
+<body>
+<div class="header"><h1>ベストプラクティス</h1></div>
+<div class="content">
+  <div class="card">
+    <h2>1. TDD中心</h2>
+    <p class="highlight">/tdd → テスト → 実装</p>
+    <p>テストを先に書いてから実装</p>
+    <p>80%+ カバレッジを維持</p>
+  </div>
+  <div class="card">
+    <h2>2. エージェント活用</h2>
+    <p>複雑なタスクは専門家に委任</p>
+    <p class="highlight">planner, code-reviewer</p>
+    <p class="highlight">security-reviewer</p>
+  </div>
+  <div class="card">
+    <h2>3. MCP は控えめに</h2>
+    <p>有効化は 10個以下</p>
+    <p>多すぎるとコンテキスト縮小</p>
+    <p class="highlight">200k → 70k になる可能性</p>
+  </div>
+  <div class="card">
+    <h2>4. Context7 活用</h2>
+    <p>ライブラリの使い方で迷ったら</p>
+    <p class="highlight">○○を Context7 で調べて</p>
+    <p>公式ドキュメントから取得</p>
+  </div>
+</div>
+</body>
+</html>

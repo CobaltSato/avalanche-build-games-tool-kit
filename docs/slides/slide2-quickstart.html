@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #F4F6F6; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { background: #1C2833; padding: 20pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 25pt 30pt; display: flex; gap: 30pt; }
+.left { flex: 1; }
+.right { flex: 1; background: #2E4053; padding: 20pt; border-radius: 8pt; }
+h2 { color: #1C2833; font-size: 18pt; margin: 0 0 15pt 0; }
+.code-block { background: #2E4053; padding: 15pt; border-radius: 6pt; margin-bottom: 15pt; }
+.code-block p { color: #5DADE2; font-size: 11pt; margin: 0 0 8pt 0; font-family: Courier New, monospace; }
+.right h2 { color: #5DADE2; }
+.right p { color: #AAB7B8; font-size: 10pt; margin: 0 0 6pt 0; font-family: Courier New, monospace; }
+</style>
+</head>
+<body>
+<div class="header"><h1>クイックスタート</h1></div>
+<div class="content">
+  <div class="left">
+    <h2>最初の3つのコマンド</h2>
+    <div class="code-block">
+      <p>/plan ログイン機能を追加したい</p>
+      <p>/tdd ユーザー認証を実装</p>
+      <p>/code-review</p>
+    </div>
+  </div>
+  <div class="right">
+    <h2>ディレクトリ構成</h2>
+    <p>.claude/</p>
+    <p>├── agents/</p>
+    <p>├── commands/</p>
+    <p>├── rules/</p>
+    <p>├── skills/</p>
+    <p>└── settings.local.json</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #F4F6F6; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { background: #1C2833; padding: 20pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 20pt 30pt; }
+.row { display: flex; gap: 15pt; margin-bottom: 12pt; }
+.card { flex: 1; background: #ffffff; padding: 15pt; border-radius: 6pt; border-left: 4pt solid #5DADE2; }
+.card h3 { color: #1C2833; font-size: 14pt; margin: 0 0 8pt 0; }
+.card p { color: #5D6D7E; font-size: 10pt; margin: 0; }
+.example { color: #5DADE2; font-size: 9pt; font-family: Courier New, monospace; }
+</style>
+</head>
+<body>
+<div class="header"><h1>5つの基本概念</h1></div>
+<div class="content">
+  <div class="row">
+    <div class="card">
+      <h3>スラッシュコマンド</h3>
+      <p>よく使う作業のショートカット</p>
+      <p class="example">/plan, /tdd, /code-review</p>
+    </div>
+    <div class="card">
+      <h3>エージェント</h3>
+      <p>特定分野の専門家</p>
+      <p class="example">planner, code-reviewer</p>
+    </div>
+    <div class="card">
+      <h3>ルール</h3>
+      <p>常に守られるガイドライン</p>
+      <p class="example">シークレット禁止</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <h3>スキル</h3>
+      <p>深い知識ベース</p>
+      <p class="example">frontend-patterns, tdd-workflow</p>
+    </div>
+    <div class="card">
+      <h3>MCP</h3>
+      <p>外部サービス連携</p>
+      <p class="example">Playwright, Context7</p>
+    </div>
+    <div class="card" style="background: #2E4053; border-left-color: #F39C12;">
+      <h3 style="color: #F39C12;">ポイント</h3>
+      <p style="color: #AAB7B8;">MCP は 10個以下に抑える</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

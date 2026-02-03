@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #1A1A2E; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1A1A2E; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #E84142; padding: 20pt 40pt;
+  display: flex; align-items: center;
+}
+.phase-badge {
+  background: #FFFFFF; color: #E84142; font-size: 14pt;
+  padding: 5pt 15pt; border-radius: 20pt; margin-right: 20pt;
+  font-weight: bold;
+}
+.header h1 {
+  color: #FFFFFF; font-size: 28pt; margin: 0;
+}
+.content {
+  padding: 25pt 50pt; display: flex; gap: 30pt;
+}
+.step-card {
+  background: #252540; border-radius: 10pt; padding: 25pt;
+  flex: 1; text-align: center;
+}
+.step-num {
+  background: #16A085; color: #FFFFFF; font-size: 24pt;
+  width: 50pt; height: 50pt; border-radius: 50%;
+  display: flex; justify-content: center; align-items: center;
+  margin: 0 auto 15pt;
+}
+.step-num p { margin: 0; }
+.step-card h2 {
+  color: #FFFFFF; font-size: 18pt; margin: 0 0 12pt 0;
+}
+.step-card p {
+  color: #CCCCCC; font-size: 12pt; margin: 0 0 8pt 0; line-height: 1.4;
+}
+.code-inline {
+  color: #88FF88; font-family: Courier New, monospace;
+  background: #0D0D1A; padding: 2pt 6pt; border-radius: 4pt;
+}
+.highlight { color: #E84142; }
+</style>
+</head>
+<body>
+<div class="header">
+  <p class="phase-badge">Phase 5</p>
+  <h1>Testing</h1>
+</div>
+<div class="content">
+  <div class="step-card">
+    <div class="step-num"><p>1</p></div>
+    <h2>Start Dev Server</h2>
+    <p><span class="code-inline">npm run dev</span></p>
+    <p>開発サーバーを起動</p>
+  </div>
+  <div class="step-card">
+    <div class="step-num"><p>2</p></div>
+    <h2>Open Browser</h2>
+    <p><span class="code-inline">localhost:3000</span></p>
+    <p>Core Wallet を接続</p>
+  </div>
+  <div class="step-card">
+    <div class="step-num"><p>3</p></div>
+    <h2>Play the Game</h2>
+    <p><span class="highlight">矢印キー</span>でプレイヤーを移動</p>
+    <p>トランザクションを承認</p>
+  </div>
+  <div class="step-card">
+    <div class="step-num"><p>4</p></div>
+    <h2>Verify</h2>
+    <p>座標がブロックチェーンに</p>
+    <p><span class="highlight">保存</span>されることを確認</p>
+  </div>
+</div>
+</body>
+</html>

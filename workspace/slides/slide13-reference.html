@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #1A1A2E; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1A1A2E; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #E84142; padding: 20pt 40pt;
+}
+.header h1 {
+  color: #FFFFFF; font-size: 28pt; margin: 0;
+}
+.content {
+  padding: 20pt 40pt; display: flex; gap: 25pt;
+}
+.left { flex: 1; }
+.right { flex: 1; }
+h2 { color: #16A085; font-size: 16pt; margin: 0 0 12pt 0; }
+.code-block {
+  background: #0D0D1A; border-radius: 8pt; padding: 12pt;
+  margin-bottom: 15pt;
+}
+.code-block p {
+  color: #88FF88; font-size: 9pt; margin: 0 0 4pt 0;
+  font-family: Courier New, monospace;
+}
+.code-block p:last-child { margin-bottom: 0; }
+.code-comment { color: #666688 !important; }
+.link-table {
+  background: #252540; border-radius: 8pt; padding: 12pt;
+}
+.link-row {
+  display: flex; margin-bottom: 8pt; padding-bottom: 8pt;
+  border-bottom: 1pt solid #333355;
+}
+.link-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.link-name { color: #E84142; font-size: 11pt; width: 100pt; }
+.link-url { color: #CCCCCC; font-size: 9pt; word-break: break-all; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Quick Reference</h1>
+</div>
+<div class="content">
+  <div class="left">
+    <h2>Gemini CLI Commands</h2>
+    <div class="code-block">
+      <p class="code-comment"># Launch</p>
+      <p>gemini</p>
+      <p>gemini -m gemini-2.5-flash</p>
+      <p>gemini --resume latest</p>
+      <p>gemini --yolo</p>
+    </div>
+    <div class="code-block">
+      <p class="code-comment"># In-session commands</p>
+      <p>/skills list</p>
+      <p>/skills reload</p>
+      <p>/help</p>
+    </div>
+    <div class="code-block">
+      <p class="code-comment"># Skill management</p>
+      <p>gemini skills install &lt;url&gt; --scope workspace</p>
+      <p>gemini skills uninstall &lt;name&gt;</p>
+      <p>gemini skills enable/disable &lt;name&gt;</p>
+    </div>
+  </div>
+  <div class="right">
+    <h2>Useful Links</h2>
+    <div class="link-table">
+      <div class="link-row">
+        <p class="link-name">Core Wallet</p>
+        <p class="link-url">core.app/download</p>
+      </div>
+      <div class="link-row">
+        <p class="link-name">Fuji Faucet</p>
+        <p class="link-url">build.avax.network/console/primary-network/faucet</p>
+      </div>
+      <div class="link-row">
+        <p class="link-name">Remix IDE</p>
+        <p class="link-url">remix.ethereum.org</p>
+      </div>
+      <div class="link-row">
+        <p class="link-name">Skill Files</p>
+        <p class="link-url">github.com/CobaltSato/react-grid-game-rendering-skill</p>
+      </div>
+      <div class="link-row">
+        <p class="link-name">Gemini CLI</p>
+        <p class="link-url">github.com/google-gemini/gemini-cli</p>
+      </div>
+      <div class="link-row">
+        <p class="link-name">Solidity Best</p>
+        <p class="link-url">cursor.directory/solidity-development-best-practices</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

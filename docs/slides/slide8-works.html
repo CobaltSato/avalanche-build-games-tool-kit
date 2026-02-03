@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #F4F6F6; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { background: #E74C3C; padding: 20pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 20pt 30pt; }
+.works { display: flex; flex-wrap: wrap; gap: 12pt; }
+.work { width: 210pt; background: #ffffff; padding: 12pt; border-radius: 6pt; border-left: 4pt solid #3498DB; }
+.work h3 { color: #1C2833; font-size: 12pt; margin: 0 0 6pt 0; }
+.work p { color: #5D6D7E; font-size: 9pt; margin: 0; }
+.work.done { border-left-color: #27AE60; background: #E8F8F5; }
+.work.done h3 { color: #1E8449; }
+</style>
+</head>
+<body>
+<div class="header"><h1>実践ワーク (work.md)</h1></div>
+<div class="content">
+  <div class="works">
+    <div class="work">
+      <h3>Work 1: /plan</h3>
+      <p>実装計画を作成する</p>
+    </div>
+    <div class="work">
+      <h3>Work 2: /tdd</h3>
+      <p>ユニットテストでTDD</p>
+    </div>
+    <div class="work">
+      <h3>Work 3: /code-review</h3>
+      <p>コード品質をチェック</p>
+    </div>
+    <div class="work done">
+      <h3>Work 4: Playwright + TDD</h3>
+      <p>E2Eテストで TDD（実践済み）</p>
+    </div>
+    <div class="work done">
+      <h3>Work 5: Playwright MCP</h3>
+      <p>ブラウザを直接操作（実践済み）</p>
+    </div>
+    <div class="work done">
+      <h3>Work 6: Context7</h3>
+      <p>最新ドキュメント検索（実践済み）</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

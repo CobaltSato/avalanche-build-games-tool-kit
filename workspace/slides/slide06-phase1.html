@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #1A1A2E; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #1A1A2E; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  background: #E84142; padding: 20pt 40pt;
+  display: flex; align-items: center;
+}
+.phase-badge {
+  background: #FFFFFF; color: #E84142; font-size: 14pt;
+  padding: 5pt 15pt; border-radius: 20pt; margin-right: 20pt;
+  font-weight: bold;
+}
+.header h1 {
+  color: #FFFFFF; font-size: 28pt; margin: 0;
+}
+.content {
+  padding: 25pt 40pt; display: flex; gap: 30pt;
+}
+.left { flex: 1; }
+.right { flex: 1; }
+h2 { color: #16A085; font-size: 16pt; margin: 0 0 12pt 0; }
+p { color: #CCCCCC; font-size: 12pt; margin: 0 0 10pt 0; line-height: 1.5; }
+.highlight { color: #E84142; }
+.skill-box {
+  background: #252540; border-radius: 8pt; padding: 15pt;
+  margin-bottom: 15pt;
+}
+.priority-table {
+  display: flex; flex-direction: column; gap: 8pt;
+}
+.priority-row {
+  display: flex; align-items: center;
+}
+.priority-badge {
+  background: #E84142; color: #FFFFFF; font-size: 10pt;
+  padding: 3pt 8pt; border-radius: 10pt; width: 30pt; text-align: center;
+  margin-right: 12pt;
+}
+.priority-text { color: #CCCCCC; font-size: 11pt; }
+</style>
+</head>
+<body>
+<div class="header">
+  <p class="phase-badge">Phase 1</p>
+  <h1>Skills Introduction</h1>
+</div>
+<div class="content">
+  <div class="left">
+    <h2>What are Skills?</h2>
+    <p>Gemini CLI に<span class="highlight">専門知識</span>をオンデマンドで適用する仕組み</p>
+    <p>特定のタスク（ゲーム開発、API 設計など）に最適化された振る舞いを AI に与えられます</p>
+
+    <h2>Skill File Structure</h2>
+    <div class="skill-box">
+      <p>---</p>
+      <p>name: my-skill-name</p>
+      <p>description: スキルの説明</p>
+      <p>---</p>
+      <p># 詳細な指示...</p>
+    </div>
+  </div>
+  <div class="right">
+    <h2>Discovery Priority</h2>
+    <div class="skill-box">
+      <div class="priority-table">
+        <div class="priority-row">
+          <p class="priority-badge">High</p>
+          <p class="priority-text">.gemini/skills/ (Workspace)</p>
+        </div>
+        <div class="priority-row">
+          <p class="priority-badge">Mid</p>
+          <p class="priority-text">~/.gemini/skills/ (User)</p>
+        </div>
+        <div class="priority-row">
+          <p class="priority-badge">Low</p>
+          <p class="priority-text">Extension Skills</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Install Commands</h2>
+    <div class="skill-box">
+      <p>/skills reload</p>
+      <p>/skills list</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

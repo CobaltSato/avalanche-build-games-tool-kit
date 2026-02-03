@@ -123,6 +123,8 @@ description: スキルの説明（Gemini がいつ使うか判断する材料）
 #### 方法 A: URL から直接インストール（推奨）
 
 ```bash
+gemini extensions install https://github.com/ankitchiplunkar/frontend-design
+
 gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/react-css-grid-game-rendering.skill --scope workspace
 
 gemini skills install https://github.com/CobaltSato/react-grid-game-rendering-skill/blob/main/avax-like-frontend-design.skill --scope workspace
@@ -254,12 +256,6 @@ gemini skills disable my-skill --scope workspace
 # .env.local を作成
 cp .env.local.example .env.locals
 ```
-
-`.env.local` を編集:
-```
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x...（デプロイしたアドレス）
-```
-
 ---
 
 ### Phase 4: アプリ作成（10分）
@@ -285,7 +281,7 @@ NEXT_PUBLIC_CONTRACT_ADDRESS=0x...（デプロイしたアドレス）
 
 参照ファイル:
 - contracts/PositionTracker.sol
-- .env.local（コントラクトアドレス・ABI）
+- env.local.example（コントラクトアドレス・ABI）
 ```
 
 ---
@@ -395,3 +391,96 @@ gemini skills disable <name>                    # 無効化
 | スキルファイル | https://github.com/CobaltSato/react-grid-game-rendering-skill |
 | Solidity ベストプラクティス | https://cursor.directory/solidity-development-best-practices |
 | Gemini CLI ドキュメント | https://github.com/google-gemini/gemini-cli |
+
+
+anthropics公式スキル集
+- https://github.com/anthropics/claude-code/tree/main/plugins
+
+gemini extensions
+https://geminicli.com/extensions/
+
+Anthropicハッカソン優勝者の設定
+- https://github.com/affaan-m/everything-claude-code
+
+ClaudeによるPhaserjs・Playwrightのゲーム開発手順
+
+- https://www.youtube.com/watch?v=QPZCMd5REP8
+- https://github.com/chongdashu/phaserjs-oakwoods
+
+---
+
+## 🎨 Bonus: Gemini + frontend-design によるデザイン仕上げ
+
+> 💡 **frontend-design スキル**: プロダクション品質のフロントエンドデザインを生成するためのスキル。カラーパレット、タイポグラフィ、レイアウト、アニメーションなどの設計原則に基づいて UI を洗練させます。
+
+---
+
+### 事前準備: frontend-design スキルの有効化
+
+```bash
+# Extension をインストール（既にインストール済みならスキップ）
+gemini extensions install https://github.com/ankitchiplunkar/frontend-design
+
+# スキルを有効化
+gemini skills enable frontend-design
+
+# 確認
+/skills list
+```
+
+---
+
+### Gemini にデザイン仕上げを依頼
+
+```
+frontend-design スキルを使って、グリッドゲームのUIをプロ品質に仕上げて。
+
+要件:
+- Avalanche ブランドカラー（#E84142 レッド、#000000 ブラック）を活用
+- グリッドセルにホバーエフェクトを追加
+- プレイヤーアイコンにアニメーション（パルス or バウンス）
+- ウォレット接続ボタンをモダンなデザインに
+- トランザクション状態のローディングインジケーター
+- レスポンシブ対応（モバイルでも操作可能）
+- ダークモード基調
+
+参照:
+- 現在の UI コンポーネント（app/ 配下）
+- Avalanche 公式サイトのデザイン: https://www.avax.network/
+```
+
+---
+
+### 期待される出力
+
+| 改善項目 | Before | After |
+|---------|--------|-------|
+| カラー | デフォルト | Avalanche ブランドカラー |
+| グリッド | 単純な border | グラデーション + ホバー効果 |
+| プレイヤー | 静的な表示 | パルスアニメーション |
+| ボタン | 基本的なスタイル | グラス morphism / ネオン効果 |
+| 状態表示 | テキストのみ | スピナー + プログレスバー |
+
+---
+
+### デザインのカスタマイズ例
+
+```
+# 別のテーマを試す
+「サイバーパンク風のネオンテーマに変更して」
+
+# アクセシビリティ強化
+「WCAG AA 準拠のコントラスト比を確保して」
+
+# ミニマリスト
+「余計な装飾を削除してミニマルなデザインに」
+```
+
+---
+
+### Tips
+
+- **段階的に適用**: 一度に全てを変更せず、コンポーネントごとに確認
+- **スクリーンショット比較**: 変更前後を比較して意図通りか確認
+- **Tailwind CSS との相性**: frontend-design は Tailwind クラスを活用した出力が得意
+- **フィードバックループ**: 「もっとコントラストを上げて」など具体的に指示

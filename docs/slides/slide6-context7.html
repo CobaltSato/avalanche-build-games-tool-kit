@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #F4F6F6; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header { background: #8E44AD; padding: 20pt 30pt; }
+.header h1 { color: #ffffff; font-size: 28pt; margin: 0; }
+.content { padding: 20pt 30pt; display: flex; gap: 25pt; }
+.left { flex: 1; }
+.right { flex: 1; }
+h2 { color: #1C2833; font-size: 16pt; margin: 0 0 12pt 0; }
+.example { background: #ffffff; padding: 12pt; border-radius: 6pt; border-left: 4pt solid #8E44AD; margin-bottom: 12pt; }
+.example p { color: #5D6D7E; font-size: 11pt; margin: 0; }
+.step { color: #8E44AD; font-size: 10pt; margin: 0 0 4pt 0; }
+.compare { display: flex; gap: 10pt; margin-top: 15pt; }
+.compare-box { flex: 1; padding: 10pt; border-radius: 6pt; }
+.context7 { background: #F5EEF8; }
+.websearch { background: #EBEDEF; }
+.compare-box h3 { font-size: 11pt; margin: 0 0 6pt 0; }
+.compare-box p { font-size: 9pt; margin: 0 0 3pt 0; color: #5D6D7E; }
+.code-block { background: #2E4053; padding: 12pt; border-radius: 6pt; }
+.code-block p { color: #5DADE2; font-size: 9pt; margin: 0 0 4pt 0; font-family: Courier New, monospace; }
+</style>
+</head>
+<body>
+<div class="header"><h1>Context7 MCP</h1></div>
+<div class="content">
+  <div class="left">
+    <h2>最新ドキュメント検索</h2>
+    <div class="example">
+      <p>ethers.js v6 でコントラクトを呼び出す方法を、Context7 で調べて教えて</p>
+    </div>
+    <p class="step">1. resolve-library-id → /websites/ethers_v6</p>
+    <p class="step">2. query-docs → 公式ドキュメントから取得</p>
+    <p class="step">3. v6 の正しい書き方を回答</p>
+    <div class="compare">
+      <div class="compare-box context7">
+        <h3 style="color: #8E44AD;">Context7</h3>
+        <p>公式ドキュメントのみ</p>
+        <p>高精度</p>
+      </div>
+      <div class="compare-box websearch">
+        <h3 style="color: #5D6D7E;">WebSearch</h3>
+        <p>ブログ、SO等</p>
+        <p>古い情報も混在</p>
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <h2>取得結果の例（ethers.js v6）</h2>
+    <div class="code-block">
+      <p>// Read - Provider で OK</p>
+      <p>const contract = new ethers.Contract(</p>
+      <p>  address, abi, provider);</p>
+      <p>const balance = await contract.balanceOf(addr);</p>
+    </div>
+    <div class="code-block" style="margin-top: 10pt;">
+      <p>// Write - Signer が必要</p>
+      <p>const contract = new ethers.Contract(</p>
+      <p>  address, abi, signer);</p>
+      <p>const tx = await contract.transfer(to, amount);</p>
+      <p>await tx.wait();</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
