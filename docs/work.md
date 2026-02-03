@@ -3,7 +3,7 @@
 > **Anthropic x Forum Ventures ハッカソン優勝者の設定集を体験する**
 
 このプロジェクトには [everything-claude-code](https://github.com/affaan-m/everything-claude-code) のベストプラクティスが組み込まれています。
-5つのワークを通じて、その威力を体験しましょう。
+6つのワークを通じて、その威力を体験しましょう。
 
 ---
 
@@ -15,7 +15,8 @@
 | **skills/** | `.claude/skills/` | 再利用可能なワークフロー定義 |
 | **commands/** | `.claude/commands/` | `/tdd` などのスラッシュコマンド |
 | **rules/** | `.claude/rules/` | 常に従うルール（セキュリティ、コーディング規約） |
-| **hooks** | `.claude/settings.local.json` | イベントggg駆動の自動化 |
+| **hooks** | `.claude/settings.local.json` | イベント駆動の自動化 |
+| **MCP** | `.mcp.json` | 外部サービス連携（Playwright, Context7） |
 ---
 
 ## Work 1: スラッシュコマンドを体験する
@@ -122,9 +123,12 @@ TDD は **everything-claude-code の中心的なワークフロー**です。
 
 ---
 
-## Work 4: Playwright MCP でブラウザを操作する
+## Work 4: Playwright + TDD で UI 機能を実装する
 
-**目的**: MCP（外部サービス連携）の威力を体験する
+**目的**: Playwright E2E テストを使った TDD サイクルを体験する
+
+> これが **everything-claude-code の真髄** です。
+> ブラウザテストを先に書き、UI を実装し、テストが通ることを確認します。
 
 ### 前提条件
 
@@ -136,38 +140,106 @@ npm run dev
 ### やること
 
 ```
-localhost:3000 を開いて、ページの要素を確認して、スクリーンショットを取って
+/plan カウンターコンポーネントに +10 ボタンを追加したい
+```
+
+計画を承認後、TDD で実装が進みます。
+
+### 期待される動作（TDD サイクル）
+
+#### 1. RED: テストを先に書く
+
+`tests/counter.spec.ts` に E2E テストが追加される：
+
+```typescript
+test("should increment by 10 when +10 button is clicked", async ({ page }) => {
+  await page.getByRole("button", { name: "+10" }).click();
+  await expect(page.getByTestId("counter-value")).toHaveText("10");
+});
+```
+
+この時点でテストを実行すると **失敗する**（ボタンがまだないから）。
+
+#### 2. GREEN: 最小限の実装
+
+`app/components/Counter.tsx` に +10 ボタンを追加：
+
+```tsx
+<button onClick={() => setCount((c) => c + 10)}>+10</button>
+```
+
+テストを実行すると **成功する**。
+
+#### 3. REFACTOR: 必要に応じて改善
+
+- 既存テストのセレクタを `{ exact: true }` で厳密化
+- コードの整理
+
+### 確認ポイント
+
+- [ ] **テストが先に書かれた**か（RED）
+- [ ] テストが最初は**失敗した**か
+- [ ] 実装後にテストが**通った**か（GREEN）
+- [ ] `npx playwright test` で全テスト PASS したか
+
+### 実際のテスト実行
+
+```bash
+npx playwright test tests/counter.spec.ts --reporter=list
+```
+
+### なぜ重要？
+
+1. **Playwright E2E テスト + TDD** の組み合わせで、UI の品質を保証
+2. テストが先にあることで、**何を作るべきか**が明確になる
+3. リグレッション（デグレ）を防ぐ
+
+---
+
+## Work 5: Playwright MCP でブラウザを直接操作する
+
+**目的**: MCP（外部サービス連携）の威力を体験する
+
+### やること
+
+```
+localhost:3000 を開いて、+10 ボタンを3回クリックして、値が 30 になることを確認して
 ```
 
 ### 期待される動作
 
 1. **Playwright MCP** がブラウザを起動
 2. `browser_snapshot` でページ要素を取得
-3. `browser_take_screenshot` でスクリーンショット取得
+3. `browser_click` で +10 ボタンをクリック
 4. 結果を報告
 
 ### 確認ポイント
 
 - [ ] ブラウザが自動で起動したか
-- [ ] ページの要素（ボタン、リンクなど）が一覧表示されたか
-- [ ] スクリーンショットが取得できたか
+- [ ] ボタンが正しくクリックされたか
+- [ ] カウンターの値が 30 になったか
 
-### 発展：E2E テストを生成する
+### 発展：デバッグに活用する
 
 ```
-/e2e ホームページが正しく表示されることを確認するテストを作成して
+localhost:3000 でカウンターを操作して、コンソールエラーがないか確認して
 ```
 
 ### なぜ重要？
 
 Playwright MCP により、**Claude がブラウザを直接操作**できます。
-テスト生成、バグ再現、デバッグが大幅に効率化されます。
+- テスト生成
+- バグ再現
+- デバッグ
+- 動作確認
+
+が大幅に効率化されます。
 
 > ⚠️ **注意**: MCP を有効化しすぎるとコンテキストが 200k → 70k に縮小する可能性があります。10個以下に抑えましょう。
 
 ---
 
-## Work 5: Context7 で最新ドキュメントを検索する
+## Work 6: Context7 で最新ドキュメントを検索する
 
 **目的**: AI の知識が古くても最新情報を取得できることを体験する
 
@@ -244,10 +316,11 @@ architect エージェントでこのプロジェクトのアーキテクチャ�
 | Work | 学んだこと | 使った機能 |
 |------|-----------|-----------|
 | 1 | コードを書く前に計画を立てる | `/plan`, planner エージェント |
-| 2 | テストを先に書く TDD | `/tdd`, tdd-guide エージェント |
+| 2 | テストを先に書く TDD（ユニットテスト） | `/tdd`, tdd-guide エージェント |
 | 3 | コミット前にレビューする | `/code-review`, rules |
-| 4 | ブラウザを自動操作する | Playwright MCP |
-| 5 | 最新ドキュメントを取得する | Context7 MCP |
+| 4 | **Playwright E2E + TDD で UI 実装** | Playwright テスト, RED→GREEN→REFACTOR |
+| 5 | ブラウザを直接操作してデバッグ | Playwright MCP |
+| 6 | 最新ドキュメントを取得する | Context7 MCP |
 | ボーナス | 専門エージェントを使い分ける | agents |
 
 ---
