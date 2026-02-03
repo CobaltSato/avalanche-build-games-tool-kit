@@ -17,6 +17,7 @@
 | **rules/** | `.claude/rules/` | 常に従うルール（セキュリティ、コーディング規約） |
 | **hooks** | `.claude/settings.local.json` | イベント駆動の自動化 |
 | **MCP** | `.mcp.json` | 外部サービス連携（Playwright, Context7） |
+
 ---
 
 ## Work 1: スラッシュコマンドを体験する
@@ -137,13 +138,30 @@ TDD は **everything-claude-code の中心的なワークフロー**です。
 npm run dev
 ```
 
-### やること
+### やること（2ステップ）
+
+#### Step 1: 計画を立てる
 
 ```
 /plan カウンターコンポーネントに +10 ボタンを追加したい
 ```
 
-計画を承認後、TDD で実装が進みます。
+計画が表示されたら `yes` で承認。
+
+#### Step 2: Playwright E2E テストで TDD 実装を依頼
+
+```
+Playwright E2E テストを使った TDD で実装して。
+テストを先に書いて、失敗を確認してから実装してください。
+```
+
+または、最初から具体的に依頼する方法：
+
+```
+カウンターに +10 ボタンを追加したい。
+Playwright E2E テストを先に書いて（RED）、
+実装して（GREEN）、テストが通ることを確認して。
+```
 
 ### 期待される動作（TDD サイクル）
 
@@ -203,7 +221,7 @@ npx playwright test tests/counter.spec.ts --reporter=list
 ### やること
 
 ```
-localhost:3000 を開いて、+10 ボタンを3回クリックして、値が 30 になることを確認して
+localhost:3000 を開いて、+10 ボタンを3回クリックして、値が 30 になることをブラウザ上で確認して
 ```
 
 ### 期待される動作
@@ -361,5 +379,4 @@ MCP を有効化しすぎると、**コンテキストが 200k → 70k に縮小
 ## 参考リンク
 
 - [everything-claude-code リポジトリ](https://github.com/affaan-m/everything-claude-code)
-- [The Shorthand Guide to Everything Claude Code（Xスレッド）](https://x.com/affaanmustafa/status/1748123456789123456)
 - [Guide.md（詳細ガイド）](./Guide.md)

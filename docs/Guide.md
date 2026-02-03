@@ -726,13 +726,241 @@ const apiKey = process.env.API_KEY
 フックはバックグラウンドで自動実行されるチェック機能です。
 意識する必要はありませんが、時折メッセージが表示されます。
 
-### フックの種類
+### フックとは？
 
-| 種類 | タイミング | 用途 |
-|------|----------|------|
-| **PreToolUse** | ツール実行前 | 特定操作のブロックやリマインド |
-| **PostToolUse** | ツール実行後 | 編集後の自動フォーマット、チェック |
-| **Stop** | セッション終了前 | 最終的なチェック（console.log警告など） |
+**フック**は、Claude Codeが特定の操作（ツールの実行、ファイルの編集など）を行う**前後**に自動的に実行されるスクリプトです。
+開発者の負担を減らし、品質を保つための自動化機能です。
+
+### フックの種類と実行タイミング
+
+| 種類 | 実行タイミング | 用途 | 実行されるタイミングの例 |
+|------|--------------|------|------------------------|
+| **PreToolUse** | **ツール実行前** | 特定操作のブロックやリマインド | Claude Codeがツールを実行しようとする**直前** |
+| **PostToolUse** | **ツール実行後** | 編集後の自動フォーマット、チェック | Claude Codeがツールを実行した**直後** |
+| **Stop** | **セッション終了前** | 最終的なチェック（console.log警告など） | Claude Codeがレスポンスを返す**直前**（各メッセージの終了時） |
+
+### 具体的な実行タイミング
+
+#### PreToolUse（ツール実行前）
+
+**いつ発動する？**
+- Claude Codeがツールを実行しようとする**直前**に発動
+- ツールが実際に実行される**前に**チェックやブロックを行う
+
+**このプロジェクトで設定されている例**:
+
+1. **開発サーバーの起動をブロック**
+   ```
+   あなた: npm run dev を実行して
+   Claude: [ツール実行を試みる]
+   → PreToolUseフックが発動
+   → [Hook] BLOCKED: Dev server must run in tmux
+   → ツール実行がブロックされる
+   ```
+
+2. **tmuxの使用を推奨**
+   ```
+   あなた: npm install を実行して
+   Claude: [ツール実行を試みる]
+   → PreToolUseフックが発動
+   → [Hook] Consider running in tmux
+   → ツール実行は続行される（警告のみ）
+   ```
+
+3. **git push前のリマインダー**
+   ```
+   あなた: git push を実行して
+   Claude: [ツール実行を試みる]
+   → PreToolUseフックが発動
+   → [Hook] Review changes before push...
+   → ツール実行は続行される（リマインダーのみ）
+   ```
+
+4. **不要なドキュメントファイルの作成をブロック**
+   ```
+   あなた: 新しいドキュメントファイルを作成して
+   Claude: [Writeツールでファイル作成を試みる]
+   → PreToolUseフックが発動
+   → [Hook] BLOCKED: Unnecessary documentation file creation
+   → ファイル作成がブロックされる
+   ```
+
+#### PostToolUse（ツール実行後）
+
+**いつ発動する？**
+- Claude Codeがツールを実行した**直後**に発動
+- 実行結果を確認して、チェックや通知を行う
+
+**このプロジェクトで設定されている例**:
+
+1. **PR作成後の通知**
+   ```
+   あなた: gh pr create を実行して
+   Claude: [BashツールでPR作成]
+   → PostToolUseフックが発動（Bashコマンド実行後）
+   → PRのURLを検出
+   → [Hook] PR created: https://github.com/...
+   → [Hook] To review: gh pr review ...
+   ```
+
+2. **ビルド完了後の通知**
+   ```
+   あなた: npm run build を実行して
+   Claude: [Bashツールでビルド実行]
+   → PostToolUseフックが発動（ビルド完了後）
+   → [Hook] Build completed - async analysis running in background
+   ```
+
+3. **TypeScriptファイル編集後の型チェック**
+   ```
+   あなた: app/page.tsx を編集して
+   Claude: [Editツールでファイル編集]
+   → PostToolUseフックが発動（.ts/.tsxファイル編集後）
+   → TypeScriptの型チェックを実行
+   → エラーがあれば表示
+   ```
+
+4. **JS/TSファイル編集後のconsole.log検出**
+   ```
+   あなた: app/components/Counter.tsx を編集して
+   Claude: [Editツールでファイル編集]
+   → PostToolUseフックが発動（.ts/.tsx/.js/.jsxファイル編集後）
+   → console.logを検索
+   → 見つかれば警告を表示
+   → [Hook] WARNING: console.log found in ...
+   ```
+
+#### Stop（セッション終了前）
+
+**いつ発動する？**
+- Claude Codeがレスポンスを返す**直前**に発動
+- **各メッセージの終了時**に実行される
+- 最終的なチェックを行う
+
+**このプロジェクトで設定されている例**:
+
+```
+あなた: コードを編集して
+Claude: [ファイルを編集]
+→ [レスポンスを返そうとする]
+→ Stopフックが発動（各レスポンスの終了時）
+→ 変更されたファイルをチェック
+→ console.logがあれば警告
+```
+
+### 実行の流れ（具体例）
+
+#### 例1: ファイル編集の流れ
+
+```
+1. あなた: app/page.tsx を編集して
+
+2. Claude: [Editツールを実行しようとする]
+   → PreToolUseフック: 発動しない（この操作には該当なし）
+
+3. Claude: [Editツールでファイルを編集]
+   → ファイルが編集される
+
+4. Claude: [編集完了]
+   → PostToolUseフックが発動
+   → TypeScript型チェックを実行
+   → console.log検出を実行
+   → 問題があれば警告を表示
+
+5. Claude: [レスポンスを返そうとする]
+   → Stopフックが発動
+   → 最終チェック（console.logなど）
+   → レスポンスを返す
+```
+
+#### 例2: 開発サーバー起動の流れ
+
+```
+1. あなた: npm run dev を実行して
+
+2. Claude: [Bashツールを実行しようとする]
+   → PreToolUseフックが発動
+   → matcherで "npm run dev" を検出
+   → ブロックスクリプトを実行
+   → [Hook] BLOCKED: Dev server must run in tmux
+   → ツール実行がブロックされる（process.exit(1)）
+
+3. Claude: [エラーメッセージを返す]
+   → Stopフックが発動
+   → レスポンスを返す
+```
+
+#### 例3: PR作成の流れ
+
+```
+1. あなた: gh pr create を実行して
+
+2. Claude: [Bashツールを実行しようとする]
+   → PreToolUseフック: 発動しない（この操作には該当なし）
+
+3. Claude: [BashツールでPR作成]
+   → PRが作成される
+   → 出力にPRのURLが含まれる
+
+4. Claude: [PR作成完了]
+   → PostToolUseフックが発動
+   → matcherで "Bash" ツールを検出
+   → 出力からPRのURLを抽出
+   → [Hook] PR created: https://github.com/...
+   → [Hook] To review: gh pr review ...
+
+5. Claude: [レスポンスを返そうとする]
+   → Stopフックが発動
+   → レスポンスを返す
+```
+
+### フックの実行順序
+
+1. **PreToolUse** - ツール実行前
+2. **ツール実行** - 実際の操作
+3. **PostToolUse** - ツール実行後
+4. **Stop** - レスポンス返却前
+
+### フックが発動する条件（Matcher）
+
+フックは、**matcher**という条件に一致した時だけ発動します。
+
+**例**:
+```json
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+  "hooks": [...]
+}
+```
+
+このmatcherは：
+- `tool == "Edit"` - Editツールが使われた時
+- `tool_input.file_path matches "\\.(ts|tsx)$"` - .tsまたは.tsxファイルが編集された時
+
+**両方の条件を満たした時だけ**フックが発動します。
+
+### よくある質問
+
+#### Q: フックはいつ発動するの？
+**A:** 
+- **PreToolUse**: Claude Codeがツールを実行しようとする直前
+- **PostToolUse**: Claude Codeがツールを実行した直後
+- **Stop**: Claude Codeがレスポンスを返す直前（各メッセージの終了時）
+
+#### Q: フックが発動しない場合は？
+**A:** 
+1. matcherの条件に一致していない可能性
+2. `.claude/settings.local.json` の設定が正しいか確認
+3. フックの構文エラーがないか確認
+
+#### Q: フックを無効にしたい場合は？
+**A:** `.claude/settings.local.json` の `hooks` セクションから該当フックを削除してください。
+
+#### Q: フックの実行をスキップできる？
+**A:** 通常はスキップできません。フックは自動的に実行されます。特定のフックを無効にしたい場合は、設定ファイルから削除してください。
+
+#### Q: フックがエラーを出したら？
+**A:** フックのエラーは警告として表示されますが、通常の操作は続行されます。ただし、`process.exit(1)` を呼ぶフック（PreToolUse）は操作をブロックします。
 
 ### 動作するフック
 
