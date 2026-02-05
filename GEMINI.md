@@ -32,7 +32,9 @@ Rules:
 ## Hard rules (must follow)
 - `app/` から `ethers` を直接使わない（チェーンアクセスは **必ず** `@avalanche-wallet` 経由）
 - `WalletProvider` は `app/layout.tsx` でアプリ全体をラップし続ける（剥がさない）
-- ABI/Address をコードにハードコードしない（`.env.local` を単一ソースにする）
+- A
+BI/Address をコードにハードコードしない（`.env.local` を単一ソースにする）
+- ABI は常に完全なものを利用する。特に `public` な状態変数は自動的にゲッター関数が生成されるため、その ABI エントリも必ず含める。
 - `callView` を使う際は、コントラクトの `msg.sender` を直接参照するロジックに依存しない（ビュー関数は通常、引数としてアドレスを受け取るか、特定のユーザーのコンテキストで動作する設計にする）
 
 ## Implementation patterns (project-specific)
@@ -51,7 +53,7 @@ Rules:
 
 ## Troubleshooting checklist
 - `useWallet` が落ちる → `app/layout.tsx` の `WalletProvider` 設定、env の存在
-- view が失敗 → ABI/Address/メソッド名/引数の整合
+- view が失敗 → ABI/Address/メソッド名/引数の整合、および `public` な状態変数のゲッターの ABI エントリが正しいかを確認
 - tx が失敗 → `txMessage` を画面に出し、ネットワーク/ガス/リバート理由を追う
 # Avalanche Game Starter Kit - Gemini Guidance
 
